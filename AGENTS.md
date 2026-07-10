@@ -144,6 +144,11 @@ Tailoring edits `src/*.tex` in-place. No branches, no commits. `main` is always 
    git checkout src/
    ```
    All edits discarded, `main` is exactly as before.
+7. Clean up tailored build artifacts:
+   ```bash
+   rm build/Detim_Zhao_Resume-Google-PlatformEngineer*
+   ```
+   This removes only the tagged PDF + aux files, leaving canonical build cache intact.
 
 If you want to **keep** a tailored PDF permanently, trigger the CI dispatch (next section).
 
