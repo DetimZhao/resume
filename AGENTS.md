@@ -129,41 +129,48 @@ When asked to tailor the resume for a specific job description (JD):
 
 ### Tailoring Workflow (Local, via opencode)
 
-Tailoring edits `src/*.tex` in-place on a branch. `main` stays pristine:
+Tailoring uses a `_build/` sandbox — `src/`, git, and `main` are never touched:
 
-1. Create a branch: `git checkout -b tailored/<company>-<role>`
-2. Prompt opencode with the JD:
-   ```
-   "tailor my resume for a platform engineer role at Google. emphasize HPC and Kubernetes."
-   ```
-3. opencode reads `src-master/` (full inventory) + JD, selects relevant content into `src/`
-4. opencode compiles with tagged jobname, then cleans aux files (keeps PDF only):
+1. Agent sets up the sandbox:
    ```bash
-   latexmk -pdf -jobname=Detim_Zhao_Resume-Google-PlatformEngineer -outdir=tailored resume.tex
-   latexmk -c -outdir=tailored resume.tex
-   # latexmk -c doesn't handle -jobname clean; remove tailored aux files directly:
-   find tailored -type f ! -name '*.pdf' -delete
+   mkdir -p _build/src
+   cp resume.tex custom-commands.tex _build/
+   cp src/heading.tex src/education.tex src/skills.tex _build/src/
    ```
-5. opencode checks page count:
+
+2. Agent reads `src-master/` (full inventory) + JD, then writes tailored content into `_build/src/`:
+   - `_build/src/experience.tex` — selects and rewrites experience from `src-master/experience.tex`
+   - `_build/src/projects.tex` — selects and rewrites projects from `src-master/projects.tex`
+   - `_build/src/skills.tex` — optionally reorders skills to match JD keywords
+
+3. Agent compiles from inside `_build/` (so `\input{src/...}` resolves to sandboxed copies):
+   ```bash
+   cd _build
+   latexmk -pdf -jobname=Detim_Zhao_Resume-Google-PlatformEngineer -outdir=../tailored resume.tex
+   cd ..
+   ```
+
+4. Agent checks page count:
    ```bash
    pdfinfo tailored/Detim_Zhao_Resume-*.pdf | grep Pages
    ```
-   If >1 page: drop or condense content until it fits before showing it to you.
-6. You review the PDF in VSCode, iterate as needed
-7. When done, switch back to clean `main`:
+   If >1 page: drop or condense content in `_build/src/`, recompile. Repeat until 1 page.
+
+5. Agent cleans aux files (keeps PDF only):
    ```bash
-   git checkout main
+   latexmk -c -outdir=tailored
+   find tailored -type f ! -name '*.pdf' -delete
    ```
-8. Delete the branch when no longer needed:
+
+6. You review `tailored/Detim_Zhao_Resume-Google-PlatformEngineer.pdf`
+
+7. If changes needed: agent edits `_build/src/*.tex`, recompiles, checks pages again
+
+8. When done, agent cleans up:
    ```bash
-   git branch -D tailored/<company>-<role>
-   # Or bulk-clean all tailoring branches:
-   # git branch | grep tailored | xargs git branch -D
+   rm -rf _build
    ```
-9. Clean up tailored build artifacts:
-   ```bash
-   rm -rf tailored/
-   ```
+   No git operations needed. `src/` and `main` are untouched.
 
 If you want to **keep** a tailored PDF permanently, trigger the CI dispatch (next section).
 
@@ -197,7 +204,6 @@ Go to Actions → "Build Resume PDF" → "Run workflow":
 - **DO** reword existing bullets with JD keywords
 - **DO** uncomment archived content if it matches
 - **DO** compile after every edit to verify
-- **DO** use `tailored/<company>-<role>` branches — never edit `main` directly for tailoring
 - **DO NOT** invent new experience, skills, or project details
 - **DO NOT** change the section ordering in `resume.tex`
 - **DO NOT** modify `custom-commands.tex` — macros are stable
