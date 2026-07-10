@@ -107,15 +107,39 @@ When asked to tailor the resume for a specific job description (JD):
 - Usually leave as-is
 - Can uncomment `\resumeItem{\textbf{Relevant Coursework:} ...}` line (currently commented out) and update courses to match JD
 
-### Tailoring Workflow
+### Tailoring Workflow (Local, via opencode)
+
+When tailoring for a role, always work on a branch so `main` stays canonical:
+
+```bash
+git checkout main
+git checkout -b tailored/<company>-<role>
+# Example: git checkout -b tailored/google-platform-engineer
+```
+
+Then:
 
 1. Read the JD and extract key keywords, technologies, and domain requirements
 2. Read `src/skills.tex` — match skills to JD, reorder/emphasize
 3. Read `src/experience.tex` — reword bullets with JD keywords, reorder, consider uncommenting
 4. Read `src/projects.tex` — reorder, reword, consider uncommenting
 5. Read `src/education.tex` — optionally activate relevant coursework
-6. Compile: `latexmk -pdf -jobname=Detim_Zhao_Resume -outdir=build resume.tex`
-7. Verify: `ls build/Detim_Zhao_Resume.pdf` — check page count (target 1 page)
+6. Set jobname for output: `-jobname=Detim_Zhao_Resume-<Company>-<Role>` (e.g., `-jobname=Detim_Zhao_Resume-Google-PlatformEngineer`)
+7. Compile: `latexmk -pdf -jobname=Detim_Zhao_Resume-Google-PlatformEngineer -outdir=build resume.tex`
+8. Verify: `ls build/Detim_Zhao_Resume-Google-PlatformEngineer.pdf` — check page count (target 1 page)
+9. Push branch → CI builds artifact (no release). Delete branch when done:
+   ```bash
+   git checkout main
+   git branch -d tailored/<company>-<role>
+   ```
+
+### Tailoring Workflow (CI, via workflow_dispatch)
+
+Go to Actions → "Build Resume PDF" → "Run workflow":
+- Fill in `company` and `role` (optional, sets PDF filename)
+- Optionally paste `job_description` (for future agent-based editing)
+- CI compiles → uploads artifact named `Detim_Zhao_Resume-<Company>-<Role>.pdf`
+- `main` stays untouched, no release created
 
 ### Constraints
 - **1-page target**: if additions push to 2 pages, drop or compress less relevant content
@@ -125,9 +149,12 @@ When asked to tailor the resume for a specific job description (JD):
 ## CI/CD Behavior
 
 - `.github/workflows/build.yml` controls everything
-- `RESUME_NAME` env var sets the output filename
-- On push to `main`: release tag = `vYYYYMMDD-HHMM`, 2 assets uploaded
-- PRs: artifact only, no release
+- `BASE_NAME: Detim_Zhao_Resume` env var sets the base output filename
+- **On push to `main`**: compile, create Release with `Detim_Zhao_Resume.pdf` + dated copy, tag = `vYYYYMMDD-HHMM`
+- **On pull_request**: compile, upload preview artifact (no release)
+- **On workflow_dispatch**:
+  - With `company`/`role`: compile to `Detim_Zhao_Resume-<Company>-<Role>.pdf`, upload as artifact
+  - Without: same as canonical build, artifact only
 - Releases use `softprops/action-gh-release@v2` with `make_latest: true`
 
 ## Do's and Don'ts
@@ -136,6 +163,7 @@ When asked to tailor the resume for a specific job description (JD):
 - **DO** reword existing bullets with JD keywords
 - **DO** uncomment archived content if it matches
 - **DO** compile after every edit to verify
+- **DO** use `tailored/<company>-<role>` branches for targeting — never edit `main` directly for tailoring
 - **DO NOT** invent new experience, skills, or project details
 - **DO NOT** change the section ordering in `resume.tex`
 - **DO NOT** modify `custom-commands.tex` — macros are stable
