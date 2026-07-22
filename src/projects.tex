@@ -2,28 +2,28 @@
 \section{Projects}
 \resumeSubHeadingListStart
 
-    \resumeProjectHeading
-    {\textbf{gRPC Microservices System}}{}
-    \resumeItemListStart
-        \resumeItem{Architected a distributed system with 5 gRPC-based microservices, implementing both interactive CLI and automated client interfaces with robust error handling and modular service design.}
-        \resumeItem{Implemented 5 gRPC services (Fitness, RecipeBook, Sort, Joke, Echo) with Protocol Buffers, file-based persistence, a service registry for discovery, and thread-safe concurrent request handling.}
-        \resumeItem{Deployed system on AWS EC2 instance with public accessibility, enabling multi-client access and validating concurrent service requests.}
-    \resumeItemListEnd
+\resumeProjectHeading
+{\textbf{gRPC Microservices System}}{}
+\resumeItemListStart
+\resumeItem{Architected a distributed system with 5 gRPC-based microservices, implementing both interactive CLI and automated client interfaces with robust error handling and modular service design.}
+\resumeItem{Implemented 5 gRPC services (Fitness, RecipeBook, Sort, Joke, Echo) with Protocol Buffers, file-based persistence, a service registry for discovery, and thread-safe concurrent request handling.}
+\resumeItem{Deployed system on AWS EC2 instance with public accessibility, enabling multi-client access and validating concurrent service requests.}
+\resumeItemListEnd
 
-    \resumeProjectHeading
-    {\textbf{AI-Integrated Wireless Emergency Alerts}}{}
-    \resumeItemListStart
-        \resumeItem{Engineered a FastAPI microservice integrating retrieval-augmented generation (RAG) with ChromaDB to enable semantic search and context-aware LLM responses.}
-        \resumeItem{Designed a containerized automation system with custom scheduling and health endpoints to orchestrate data ingestion, scraping, and LLM pipelines.}  
-        \resumeItem{Developed a fault-tolerant Python scraper for the PBS WARN API, utilizing exponential backoff to reliably extract and normalize live emergency data.}
-        \resumeItem{Built an automated vector database cleanup service to dynamically prune expired alerts, optimizing retrieval fidelity and reducing database bloat.}
-    \resumeItemListEnd
+\resumeProjectHeading
+{\textbf{AI-Integrated Wireless Emergency Alerts}}{}
+\resumeItemListStart
+\resumeItem{Engineered a FastAPI microservice integrating retrieval-augmented generation (RAG) with ChromaDB to enable semantic search and context-aware LLM responses.}
+\resumeItem{Designed a containerized automation system with custom scheduling and health endpoints to orchestrate data ingestion, scraping, and LLM pipelines.}
+\resumeItem{Developed a fault-tolerant Python scraper for the PBS WARN API, utilizing exponential backoff to reliably extract and normalize live emergency data.}
+\resumeItem{Built a ChromaDB cleanup service that parses expiration timestamps and batch-deletes stale alerts on a 2-hour schedule, with a health endpoint verifying cleanup status.}
+\resumeItemListEnd
 
-    \resumeProjectHeading
-    {\textbf{Gym Calendar Application (Memoranda) Modernization}}{}
-    \resumeItemListStart
-        \resumeItem{Integrated Google Calendar API with OAuth2 to synchronize cross-timezone class schedules, implementing push-based event creation and resolving datetime offset conflicts.}
-        \resumeItem{Refactored legacy Java codebase (25,000+ LOC) to eliminate compiler warnings and improve maintainability while managing Git workflows and merge conflicts.}
-    \resumeItemListEnd
+\resumeProjectHeading
+{\textbf{Gym Calendar Application (Memoranda) Modernization}}{}
+\resumeItemListStart
+\resumeItem{Integrated Google Calendar API with OAuth2 to synchronize cross-timezone class schedules, implementing push-based event creation and resolving datetime offset conflicts.}
+\resumeItem{Refactored legacy Java codebase (25,000+ LOC) to eliminate compiler warnings and improve maintainability while managing Git workflows and merge conflicts.}
+\resumeItemListEnd
 
 \resumeSubHeadingListEnd
