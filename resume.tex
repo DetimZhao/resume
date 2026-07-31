@@ -36,6 +36,9 @@
 % \usepackage{CormorantGaramond}
 \usepackage{charter}
 
+% Spacing configuration (all tunable knobs — see docs/SPACING.md)
+\input{spacing-config}
+
 \pagestyle{fancy}
 \fancyhf{} % clear all header and footer fields
 \fancyfoot{}
@@ -43,11 +46,11 @@
 \renewcommand{\footrulewidth}{0pt}
 
 % Adjust margins
-\addtolength{\oddsidemargin}{-0.5in}
-\addtolength{\evensidemargin}{-0.5in}
-\addtolength{\textwidth}{1in}
-\addtolength{\topmargin}{-.7in}
-\addtolength{\textheight}{1.25in}
+\addtolength{\oddsidemargin}{\oddSideMargin}
+\addtolength{\evensidemargin}{\evenSideMargin}
+\addtolength{\textwidth}{\textWidthExtra}
+\addtolength{\topmargin}{\marginTop}
+\addtolength{\textheight}{\textHeightExtra}
 
 \urlstyle{same}
 
@@ -57,8 +60,8 @@
 
 % Sections formatting
 \titleformat{\section}{
-  \vspace{-4pt}\scshape\raggedright\large
-}{}{0em}{}[\color{black}\titlerule\vspace{-5pt}]
+  \vspace{\gapSectionTop}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule\vspace{\gapSectionBottom}]
 
 % Ensure that generate pdf is machine readable/ATS parsable
 \pdfgentounicode=1
