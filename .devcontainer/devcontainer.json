@@ -33,6 +33,10 @@
         "latex-workshop.latex.autoBuild.run": "onSave",
         "latex-workshop.view.pdf.viewer": "tab",
         "latex-workshop.synctex.afterBuild.enabled": true,
+        // synctex.afterBuild can race with autoBuild onSave, logging a transient
+        // EntryNotFound error. This is harmless — the file watcher reloads the
+        // already-open PDF tab once the build completes. No fix needed.
+        "latex-workshop.latex.jobname": "Detim_Zhao_Resume",
         "latex-workshop.intellisense.citation.enabled": true,
         "latex-workshop.message.update.show": false,
         "latex-workshop.formatting.latex": "latexindent",

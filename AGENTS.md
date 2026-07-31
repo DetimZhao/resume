@@ -9,13 +9,16 @@ The canonical source lives here. The compiled PDF is published as a GitHub Relea
 - **Visibility**: public — the source, commit history, and compiled PDFs are all publicly accessible. No secrets are stored here.
 - **Template origin**: https://github.com/sb2nov/resume (`article` class, `\resumeItem`, `\resumeSubheading`, etc.)
 - **Language**: LaTeX with custom macros in `custom-commands.tex`
-- **Build**: `latexmk -pdf -jobname=Detim_Zhao_Resume -outdir=build resume.tex`
+- **Build**: `latexmk -pdf -outdir=build resume.tex`
 
 ## Directory Structure
 
 ```
 resume.tex              # Main document — preamble, \begin{document}, \input{src/...}
 custom-commands.tex     # \newcommand macros (\resumeItem, \resumeSubheading, etc.)
+spacing-config.tex      # All tunable spacing knobs — the one file agents may edit for density tuning
+docs/
+  SPACING.md            # Spacing parameter reference + auto-tune algorithm
 src/
   heading.tex           # Name, email, LinkedIn, GitHub links
   education.tex         # University and degree
@@ -40,23 +43,23 @@ VERSIONS.md             # Version changelog
 ```bash
 # Compile
 docker run --rm -v "$PWD":/workspace -w /workspace texlive/texlive:latest \
-  latexmk -pdf -jobname=Detim_Zhao_Resume -outdir=build resume.tex
+  latexmk -pdf -outdir=build resume.tex
 
 # Clean aux files
 docker run --rm -v "$PWD":/workspace -w /workspace texlive/texlive:latest \
-  latexmk -c -outdir=build
+  latexmk -c -outdir=build resume.tex
 
 # Full clean (removes PDF too)
 docker run --rm -v "$PWD":/workspace -w /workspace texlive/texlive:latest \
-  latexmk -C -outdir=build
+  latexmk -C -outdir=build resume.tex
 ```
 Note: macOS MacTeX Basic lacks `latexmk` and some packages (e.g. `fontawesome5`). Use Docker above or the Dev Container.
 
 ### Local (Dev Container)
 ```bash
-latexmk -pdf -jobname=Detim_Zhao_Resume -outdir=build resume.tex
-latexmk -c -outdir=build          # Clean aux files
-latexmk -C -outdir=build          # Full clean (removes PDF too)
+latexmk -pdf -outdir=build resume.tex
+latexmk -c -outdir=build resume.tex   # Clean aux files
+latexmk -C -outdir=build resume.tex   # Full clean (removes PDF too)
 ```
 
 ### CI (GitHub Actions)
@@ -160,7 +163,7 @@ Tailoring uses a `_build/` sandbox — `src/`, git, and `main` are never touched
 1. Agent sets up the sandbox:
    ```bash
    mkdir -p _build/src
-   cp resume.tex custom-commands.tex _build/
+   cp resume.tex custom-commands.tex spacing-config.tex _build/
    cp src/heading.tex src/education.tex src/skills.tex _build/src/
    ```
 
@@ -187,11 +190,14 @@ Tailoring uses a `_build/` sandbox — `src/`, git, and `main` are never touched
    ```bash
    pdfinfo tailored/Detim_Zhao_Resume-*.pdf | grep Pages
    ```
-   If >1 page: drop or condense content in `_build/src/`, recompile. Repeat until 1 page.
+   If >1 page: first try tuning `spacing-config.tex` knobs in the priority order
+   documented in `docs/SPACING.md` (auto-tune algorithm). Recompile after each change.
+   If still >1 page after all knobs are at minimums: drop or condense content.
+   If <1 page with >15pt slack: loosen knobs in reverse priority to improve readability.
 
 5. Agent cleans aux files (keeps PDF only):
    ```bash
-   latexmk -c -outdir=tailored
+   latexmk -c -outdir=tailored resume.tex
    find tailored -type f ! -name '*.pdf' -delete
    ```
 
@@ -235,31 +241,21 @@ These are Detim Zhao's personal preferences for how the resume is managed. AI ag
 
 ## Content Density
 
-When the page has unused whitespace and can accommodate more content, or when content needs to be
-squeezed to fit one page, the following knobs are available. These should be adjusted
-conservatively — no single change should exceed ~2pt at a time.
+All tunable spacing knobs live in `spacing-config.tex` — a single file for density tuning.
+See `docs/SPACING.md` for the full parameter reference table, ranges, and the auto-tune algorithm
+(for agents fitting content to exactly 1 page).
 
-### Spacing Knobs (in `custom-commands.tex`)
+### Quick Reference
 
-| Location | Default | Range | Effect |
-|----------|---------|-------|--------|
-| `\resumeSubheading` top | `\vspace{-2pt}` | `-4pt` to `0pt` | Gap above each role header |
-| `\resumeSubheading` bottom | `\vspace{-7pt}` | `-9pt` to `-5pt` | Gap after each role header |
-| `\resumeItem` bottom | `\vspace{-3pt}` | `-4pt` to `0pt` | Gap between bullet points |
-| `\resumeItemListEnd` bottom | `\vspace{-7pt}` | `-7pt` to `-3pt` | Gap after a bullet list |
-
-### Page Geometry (in `resume.tex`)
-
-| Location | Default | Range | Effect |
-|----------|---------|-------|--------|
-| Top margin (`\topmargin`) | `-0.7in` | `-0.75in` to `-0.5in` | Vertical space above header |
-| Text height (`\textheight`) | `+1.25in` | `+1.25in` to `+1.0in` | Total body text height |
-| Section title top (`\titleformat`) | `\vspace{-4pt}` | `-6pt` to `-2pt` | Gap above each section title |
-| Section title bottom (`\titleformat`) | `\vspace{-5pt}` | `-7pt` to `-3pt` | Gap below section title rule |
+| File | Editable by agents? | Purpose |
+|------|---------------------|---------|
+| `spacing-config.tex` | **Yes** | All spacing knobs (bullet gaps, section spacing, page geometry, etc.) |
+| `custom-commands.tex` | No | Stable macro definitions — references params from spacing-config |
+| `resume.tex` | No | Page structure + `\input` routing — references params from spacing-config |
 
 ### Guidelines
 
-- Prefer adjusting item-level spacing (`\resumeItem`, `\resumeSubheading`) over page geometry
+- Prefer adjusting item-level spacing (`\gapBullet`, `\gapRoleHeader`) over page geometry
 - Never change the font size — it stays at `11pt`
 - After any spacing change, recompile and verify the page count
 - If whitespace is abundant, add or restore content bullets rather than loosening spacing
@@ -296,7 +292,7 @@ The `_build/` sandbox never commits — agent changes are always ephemeral. No `
 - **DO** compile after every edit to verify
 - **DO NOT** invent new experience, skills, or project details
 - **DO NOT** change the section ordering in `resume.tex`
-- **DO NOT** modify `custom-commands.tex` — macros are stable
+- **DO NOT** modify `custom-commands.tex` — macros are stable, spacing params are in `spacing-config.tex`
 - **DO NOT** commit build artifacts (they're gitignored)
 - **DO NOT** create new `.tex` files in `src/` — use existing files only
 - **DO NOT** rewrite entire files for minor changes — use find-and-replace
