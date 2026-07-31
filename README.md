@@ -43,7 +43,7 @@ If you're forking this repo to build your own resume:
 ### Local Development
 ```bash
 # Canonical build
-latexmk -pdf -jobname=Detim_Zhao_Resume -outdir=build resume.tex
+latexmk -pdf -outdir=build resume.tex
 
 # Or use VSCode: Ctrl+Alt+B (LaTeX Workshop build)
 ```
@@ -78,6 +78,10 @@ Use an AI coding agent (e.g. Claude Code, opencode, Codex CLI) to tailor the res
 .
 ├── resume.tex              # Main document → \input{src/...}
 ├── custom-commands.tex     # \newcommand macros
+├── spacing-config.tex      # All tunable spacing knobs
+├── .latexmkrc              # Central jobname for all builds
+├── docs/
+│   └── SPACING.md          # Spacing reference + auto-tune algorithm
 ├── LICENSE                 # MIT
 ├── src/                    # Canonical (1-page), curated for general use
 │   ├── heading.tex
@@ -105,10 +109,10 @@ Old resume PDFs live in `archive/`. See [VERSIONS.md](VERSIONS.md) for the full 
 
 ```bash
 # Clean aux files (keeps PDF)
-latexmk -c -outdir=build
+latexmk -c -outdir=build resume.tex
 
 # Full clean (removes PDF too)
-latexmk -C -outdir=build
+latexmk -C -outdir=build resume.tex
 
 # Check page count
 pdfinfo build/Detim_Zhao_Resume.pdf | grep Pages
