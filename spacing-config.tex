@@ -1,0 +1,30 @@
+%-------------------------%
+% Spacing configuration
+% All tunable knobs live here — edit values in this file, then recompile.
+% See docs/SPACING.md for the reference table, ranges, and auto-tune algorithm.
+
+% --- Page geometry ---
+\newcommand{\marginTop}{-.7in}            % Vertical space above header; range: -.75in to -.5in
+\newcommand{\textHeightExtra}{1.25in}     % Total body text height; range: 1.25in to 1.0in
+\newcommand{\oddSideMargin}{-0.5in}       % Left margin; rarely tuned
+\newcommand{\evenSideMargin}{-0.5in}      % Right margin (even pages); rarely tuned
+\newcommand{\textWidthExtra}{1in}         % Extra text width; rarely tuned
+
+% --- Section title spacing ---
+\newcommand{\gapSectionTop}{-8pt}         % Gap above each section title; range: -8pt to -6pt
+\newcommand{\gapSectionBottom}{-5pt}      % Gap below section title rule; range: -7pt to -3pt
+
+% --- Inter-section / heading gaps ---
+\newcommand{\gapAfterHeading}{-14pt}        % Gap between heading (center env) and first section; range: -14pt to 0pt
+\newcommand{\gapAfterSkills}{-14.2pt}     % Gap after Skills section; derived value — re-measure if \gapListEnd, \gapSectionBottom, or \gapRoleHeader change. See docs/SPACING.md for derivation
+\newcommand{\gapHeadingInternal}{6pt}     % Gap between contact row and subtitle (Software Engineer); range: 0pt to 10pt
+
+% --- Block-level spacing ---
+\newcommand{\gapListEnd}{-7pt}            % Gap after a bullet list (resumeItemListEnd); range: -9pt to -3pt
+\newcommand{\gapRoleHeader}{-7pt}         % Gap after role/project headers (resumeSubheading, resumeSubSubheading, resumeProjectHeading); range: -9pt to -5pt
+\newcommand{\gapRoleHeaderSubSub}{\gapRoleHeader}    % Override to break from \gapRoleHeader for sub-sub-headers
+\newcommand{\gapRoleHeaderProject}{\gapRoleHeader}   % Override to break from \gapRoleHeader for project headers
+
+% --- Item-level spacing ---
+\newcommand{\gapBullet}{-2pt}             % Gap after each bullet (resumeItem); range: -4pt to 0pt
+\newcommand{\gapSubBulletExtra}{-4pt}     % Extra vspace on top of \gapBullet for sub-bullets (resumeSubItem)
