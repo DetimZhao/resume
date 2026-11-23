@@ -7,24 +7,15 @@
 {\textbf{gRPC Microservices System}}{}
 \resumeItemListStart
 \resumeItem{Architected a distributed system with 5 gRPC-based microservices, implementing both interactive CLI and automated client interfaces with robust error handling and modular service design.}
-\resumeItem{Implemented 5 gRPC services (Fitness, RecipeBook, Sort, Joke, Echo) with Protocol Buffers, file-based persistence, a service registry for discovery, and thread-safe concurrent request handling.}
-\resumeItem{Deployed system on AWS EC2 instance with public accessibility, enabling multi-client access and validating concurrent service requests.}
+\resumeItem{Implemented Fitness, RecipeBook, Sort, Joke, and Echo services with Protocol Buffers, file-based persistence, a service registry for discovery, and thread-safe concurrent request handling.}
 \resumeItemListEnd
 
 \resumeProjectHeading
 {\textbf{AI-Integrated Wireless Emergency Alerts}}{}
 \resumeItemListStart
-\resumeItem{Engineered a FastAPI microservice integrating retrieval-augmented generation (RAG) with ChromaDB to enable semantic search and context-aware LLM responses.}
-\resumeItem{Designed a containerized automation system with custom scheduling and health endpoints to orchestrate data ingestion, scraping, and LLM pipelines.}
+\resumeItem{Engineered a FastAPI microservice integrating RAG with ChromaDB to enable semantic search and context-aware LLM responses.}
+\resumeItem{Designed a containerized automation service with health endpoints that runs ingestion, scraping, LLM pipelines, and ChromaDB cleanup of expired alerts every 2 hours.}
 \resumeItem{Developed a fault-tolerant Python scraper for the PBS WARN API, utilizing exponential backoff to reliably extract and normalize live emergency data.}
-\resumeItem{Built a ChromaDB cleanup service that parses expiration timestamps and batch-deletes stale alerts on a 2-hour schedule, with a health endpoint verifying cleanup status.}
-\resumeItemListEnd
-
-\resumeProjectHeading
-{\textbf{Semantic Arithmetic Playground (detimzhao.dev)}}{}
-\resumeItemListStart
-\resumeItem{Built an interactive 3D vector-arithmetic explorer in Three.js with a formula parser, Levenshtein autocorrect, and 384-dimensional vector arithmetic.}
-\resumeItem{Engineered a Python pipeline converting 1,294 AI/ML concepts from HuggingFace, arXiv, Wikipedia, and PyTorch docs into 3D embeddings via PCA, where related ideas cluster.}
 \resumeItemListEnd
 
 \resumeSubHeadingListEnd
