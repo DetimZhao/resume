@@ -1,5 +1,5 @@
 ---
-description: Flatten resume.tex + custom-commands.tex + src/*.tex into a single self-contained one-page .tex and compile to PDF
+description: Flatten resume.tex + spacing-config.tex + custom-commands.tex + src/*.tex into a single self-contained one-page .tex and compile to PDF
 mode: subagent
 permission:
   edit: allow
@@ -15,15 +15,17 @@ permission:
 ---
 
 You are a resume-flattening agent. Your job is to convert the modular resume
-(`resume.tex` + `custom-commands.tex` + `src/*.tex`) into a **single self-contained
-`.tex` file** with no `\input` or `\include` to repo files, and compile it to a
-**one-page PDF**. Output goes to `converted/`.
+(`resume.tex` + `spacing-config.tex` + `custom-commands.tex` + `src/*.tex`) into a
+**single self-contained `.tex` file** with no `\input` or `\include` to repo files,
+and compile it to a **one-page PDF**. Output goes to `converted/`.
 
 ## Rules
 
-- **Do not modify** `resume.tex`, `custom-commands.tex`, or any file in `src/`.
+- **Do not modify** `resume.tex`, `custom-commands.tex`, `spacing-config.tex`, or any
+  file in `src/`.
 - Keep `\input{glyphtounicode}` — it's a texlive system file, not a repo file.
-- Move custom-commands definitions into the preamble (before `\begin{document}`).
+- Move the `spacing-config.tex` and `custom-commands.tex` definitions into the preamble
+  (before `\begin{document}`), spacing params first — the macros reference them.
 - Drop the commented "Original Layout Below" block from the output.
 - Drop `% !TEX root = ...` comments from src files (they refer to `../resume.tex`).
 - Preserve all content faithfully — whitespace, `\vspace`, spacing comments, etc.
@@ -42,6 +44,7 @@ mkdir -p converted
 Read these files:
 - `resume.tex`
 - `custom-commands.tex`
+- `spacing-config.tex`
 - `src/heading.tex`
 - `src/skills.tex`
 - `src/experience.tex`
@@ -59,8 +62,10 @@ Write `converted/Detim_Zhao_Resume-flat.tex` as a single file. Structure:
    - All `\usepackage{...}` lines, `\input{glyphtounicode}`, font setup, fancyhdr,
      margins, `\urlstyle{same}`, `\raggedbottom`/`\raggedright`, `\tabcolsep`,
      `\titleformat{\section}{...}`, `\pdfgentounicode=1`
-   - Then the **inlined contents of `custom-commands.tex`** (all `\newcommand`,
-     `\renewcommand`, `\definecolor` definitions)
+   - Then the **inlined contents of `spacing-config.tex`** (all `\newcommand{\gapX}`
+     definitions, with their `range:` comments), followed by the **inlined contents of
+     `custom-commands.tex`** (all `\newcommand`, `\renewcommand`, `\definecolor`
+     definitions)
 3. **`\begin{document}`**
 4. **Body** — inlined content from each `src/*.tex` file, in DZ layout order:
    heading → skills → experience → projects → education
@@ -89,11 +94,10 @@ If >1 page, in priority order:
 
 1. **Trim content**: drop the weakest/least impactful bullets from experience or
    projects. Recompile.
-2. **Tighten spacing**: adjust `\vspace` values in the inlined macro definitions by
-   1–2pt:
-   - `\resumeItem` bottom: `-4pt` → `-5pt` (max `-5pt`)
-   - `\resumeSubheading` bottom: `-7pt` → `-8pt` (max `-9pt`)
-   - `\resumeItemListEnd` bottom: `-7pt` → `-8pt` (max `-8pt`)
+2. **Tighten spacing**: adjust the inlined `\gapX` definitions from
+   `spacing-config.tex` (e.g. `\gapListEnd`, `\gapRoleHeader`, `\gapBullet`) by 1-2pt,
+   staying within each knob's inline `range:` comment. Follow the auto-tune priority
+   order in `docs/SPACING.md`. Never edit the macros in `custom-commands.tex`.
    Recompile after each change. Retest page count.
 
 Never change the `11pt` font size.

@@ -26,6 +26,7 @@ description (JD), producing a 1-page PDF in the `tailored/` directory.
 - Follow STAR format: bullets start with strong past-tense action verbs.
 - Never include relevant coursework in education.
 - Do not modify `custom-commands.tex` or `resume.tex` structure.
+- Tune spacing only in the sandbox copy of `spacing-config.tex` (see "Spacing" below).
 - Do not reorder roles (reverse chronological) — only reorder bullets within roles.
 
 ## Tailoring Workflow
@@ -36,9 +37,10 @@ description (JD), producing a 1-page PDF in the `tailored/` directory.
 mkdir -p _build/src revisions
 ```
 
-Copy base files into sandbox:
+Copy base files into sandbox — `resume.tex` has `\input{spacing-config}`, so
+`spacing-config.tex` must come too or the build fails:
 ```bash
-cp resume.tex custom-commands.tex _build/
+cp resume.tex custom-commands.tex spacing-config.tex _build/
 cp src/heading.tex src/education.tex _build/src/
 ```
 
@@ -84,8 +86,8 @@ pdfinfo tailored/Detim_Zhao_Resume-*.pdf | grep Pages
 
 If >1 page:
 - Drop or condense the least JD-relevant bullets
-- If available, use spacing knobs (AGENTS.md: Content Density section) — adjust
-  `\resumeItem` and `\resumeSubheading` vspace by 1-2pt
+- Tune the knobs in `_build/spacing-config.tex` following "Spacing" below and the
+  auto-tune priority order in `docs/SPACING.md`
 - Recompile and re-check. Repeat until 1 page.
 
 If <1 page with unused whitespace:
@@ -116,16 +118,17 @@ Report to the user:
 rm -rf _build
 ```
 
-## Spacing Knobs (when squeezing content)
+## Spacing (when squeezing content)
 
-From `custom-commands.tex`:
+`spacing-config.tex` is the **single source of truth** for current values and valid
+ranges. Read the copy in `_build/` before tuning — every tunable knob has an inline
+`% range: ...` comment. `docs/SPACING.md` documents the auto-tune priority order and
+the measurement procedure; it deliberately does not repeat the numbers.
 
-| Location | Default | Range | Effect |
-|----------|---------|-------|--------|
-| `\resumeSubheading` top | `\vspace{-2pt}` | `-4pt` to `0pt` | Gap above role header |
-| `\resumeSubheading` bottom | `\vspace{-7pt}` | `-9pt` to `-5pt` | Gap after role header |
-| `\resumeItem` bottom | `\vspace{-3pt}` | `-4pt` to `0pt` | Gap between bullets |
-| `\resumeItemListEnd` bottom | `\vspace{-7pt}` | `-7pt` to `-3pt` | Gap after bullet list |
-
-Prefer item-level spacing adjustments over page geometry changes.
-Never change the font size.
+- Edit only `_build/spacing-config.tex` in the sandbox. Never `custom-commands.tex`,
+  `resume.tex`, or the repo's own `spacing-config.tex`.
+- Change one knob at a time, by 1-2pt, within its documented range. Recompile after each.
+- Prefer item-level knobs (`\gapListEnd`, `\gapRoleHeader`, `\gapBullet`) over page geometry.
+- `\gapAfterSkills` is derived — re-measure it per `docs/SPACING.md` if `\gapListEnd`,
+  `\gapSectionBottom`, or `\gapRoleHeader` changes.
+- Never change the font size.

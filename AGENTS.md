@@ -18,7 +18,7 @@ resume.tex              # Main document — preamble, \begin{document}, \input{s
 custom-commands.tex     # \newcommand macros (\resumeItem, \resumeSubheading, etc.)
 spacing-config.tex      # All tunable spacing knobs — the one file agents may edit for density tuning
 docs/
-  SPACING.md            # Spacing parameter reference + auto-tune algorithm
+  SPACING.md            # Auto-tune algorithm + measurement (values live in spacing-config.tex)
 src/
   heading.tex           # Name, email, LinkedIn, GitHub links
   education.tex         # University and degree
@@ -190,9 +190,10 @@ Tailoring uses a `_build/` sandbox — `src/`, git, and `main` are never touched
    ```bash
    pdfinfo tailored/Detim_Zhao_Resume-*.pdf | grep Pages
    ```
-   If >1 page: first try tuning `spacing-config.tex` knobs in the priority order
-   documented in `docs/SPACING.md` (auto-tune algorithm). Recompile after each change.
-   If still >1 page after all knobs are at minimums: drop or condense content.
+   If >1 page: first try tuning the knobs in `_build/spacing-config.tex` (read the
+   current values and inline ranges there) in the priority order documented in
+   `docs/SPACING.md` (auto-tune algorithm). Recompile after each change.
+   If still >1 page after all knobs are at their bounds: drop or condense content.
    If <1 page with >15pt slack: loosen knobs in reverse priority to improve readability.
 
 5. Agent cleans aux files (keeps PDF only):
@@ -242,8 +243,10 @@ These are Detim Zhao's personal preferences for how the resume is managed. AI ag
 ## Content Density
 
 All tunable spacing knobs live in `spacing-config.tex` — a single file for density tuning.
-See `docs/SPACING.md` for the full parameter reference table, ranges, and the auto-tune algorithm
-(for agents fitting content to exactly 1 page).
+It is the **single source of truth** for current values and valid ranges (inline `% range:`
+comments). Read it before tuning; if any documentation or agent prompt disagrees with it,
+the file wins. `docs/SPACING.md` documents the auto-tune priority order, measurement, and
+derivation procedure — it deliberately does not repeat the numbers.
 
 ### Quick Reference
 
@@ -259,6 +262,7 @@ See `docs/SPACING.md` for the full parameter reference table, ranges, and the au
 - Never change the font size — it stays at `11pt`
 - After any spacing change, recompile and verify the page count
 - If whitespace is abundant, add or restore content bullets rather than loosening spacing
+- Never hardcode spacing values in docs or agent prompts — they drift; point to `spacing-config.tex` instead
 
 ## CI/CD Behavior
 

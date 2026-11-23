@@ -1,94 +1,103 @@
-# Spacing Configuration Reference
+# Spacing Configuration Guide
 
-> Companion to `spacing-config.tex`. All tunable spacing knobs in one place.
+> `spacing-config.tex` is the **single source of truth** for current values and valid
+> ranges. Every tunable knob has an inline `% range: ...` comment. This document explains
+> *how* to tune; it deliberately does not repeat the numbers, so changing
+> `spacing-config.tex` never requires an update here.
 
-## Parameter Table
+Read `spacing-config.tex` before changing any spacing. If this document, `AGENTS.md`, or
+an agent prompt disagrees with that file, the file wins.
 
-| Parameter | Used in | Default | Min | Max | Effect |
-|-----------|---------|---------|-----|-----|--------|
-| `\marginTop` | `resume.tex` (topmargin) | `-.7in` | `-.75in` | `-.5in` | Vertical space above header |
-| `\textHeightExtra` | `resume.tex` (textheight) | `1.25in` | `1.0in` | `1.25in` | Total body text height |
-| `\gapSectionTop` | `resume.tex` (titleformat) | `-4pt` | `-6pt` | `-2pt` | Gap above each section title |
-| `\gapSectionBottom` | `resume.tex` (titleformat) | `-5pt` | `-7pt` | `-3pt` | Gap below section title rule |
-| `\gapAfterHeading` | `src/heading.tex` | `0pt` | `-6pt` | `2pt` | Gap between heading and first section |
-| `\gapAfterSkills` | `src/skills.tex` | `-14.2pt` | (derived) | (derived) | Gap between Skills and next section |
-| `\gapHeadingInternal` | `src/heading.tex` | `6pt` | `0pt` | `10pt` | Gap between contact row and subtitle |
-| `\gapListEnd` | `custom-commands.tex` | `-7pt` | `-9pt` | `-3pt` | Gap after a bullet list |
-| `\gapRoleHeader` | `custom-commands.tex` | `-7pt` | `-9pt` | `-5pt` | Gap after role/project headers |
-| `\gapRoleHeaderSubSub` | `custom-commands.tex` | `-7pt` | — | — | Override for sub-sub-headers (defaults to `\gapRoleHeader`) |
-| `\gapRoleHeaderProject` | `custom-commands.tex` | `-7pt` | — | — | Override for project headers (defaults to `\gapRoleHeader`) |
-| `\gapBullet` | `custom-commands.tex` | `-4pt` | `-4pt` | `0pt` | Gap after each bullet point |
-| `\gapSubBulletExtra` | `custom-commands.tex` | `-4pt` | — | — | Extra vspace for sub-bullets (on top of `\gapBullet`) |
+## Knobs at a glance
 
-Rarely tuned:
-| `\oddSideMargin` | `resume.tex` | `-0.5in` | — | — | Left margin (oddsidemargin) |
-| `\evenSideMargin` | `resume.tex` | `-0.5in` | — | — | Right margin for even pages |
-| `\textWidthExtra` | `resume.tex` | `1in` | — | — | Extra text width |
+Current values and min/max bounds all live in `spacing-config.tex`. This table only
+maps each knob to where it is used.
 
-## Layered Overrides
+| Parameter | Used in | Effect |
+|-----------|---------|--------|
+| `\marginTop` | `resume.tex` (topmargin) | Vertical space above the header |
+| `\textHeightExtra` | `resume.tex` (textheight) | Total body text height |
+| `\oddSideMargin`, `\evenSideMargin`, `\textWidthExtra` | `resume.tex` | Horizontal geometry; rarely tuned |
+| `\gapSectionTop` | `resume.tex` (`\titleformat`) | Gap above each section title |
+| `\gapSectionBottom` | `resume.tex` (`\titleformat`) | Gap below the section title rule |
+| `\gapAfterHeading` | `src/heading.tex` | Gap between heading and first section |
+| `\gapAfterSkills` | `src/skills.tex` | Derived gap between Skills and Experience |
+| `\gapHeadingInternal` | `src/heading.tex` | Gap between contact row and subtitle |
+| `\gapListEnd` | `custom-commands.tex` | Gap after a bullet list |
+| `\gapRoleHeader` | `custom-commands.tex` | Gap after role/project headers |
+| `\gapRoleHeaderSubSub`, `\gapRoleHeaderProject` | `custom-commands.tex` | Per-header overrides (fall back to `\gapRoleHeader`) |
+| `\gapBullet` | `custom-commands.tex` | Gap after each bullet |
+| `\gapSubBulletExtra` | `custom-commands.tex` | Extra gap for sub-bullets, on top of `\gapBullet` |
 
-`\gapRoleHeader` is the global default for all three header macros. To tune them independently:
+For the negative `\gapX` values, more negative means tighter. The inline `range:` comment
+gives each knob's legal bounds. Knobs without a range comment are either derived or rarely
+tuned — leave them alone unless you are re-measuring.
+
+## Layered overrides
+
+`\gapRoleHeader` is the global default for all three header macros. To tune one header
+independently, override its parameter in `spacing-config.tex`:
 
 ```tex
-% Override sub-sub-headers independently:
-\renewcommand{\gapRoleHeaderSubSub}{-9pt}
-% Override project headers independently:
-\renewcommand{\gapRoleHeaderProject}{-5pt}
-% resumeSubheading continues to use \gapRoleHeader (-7pt)
+\renewcommand{\gapRoleHeaderSubSub}{<value>}   % sub-sub-headers only
+\renewcommand{\gapRoleHeaderProject}{<value>}  % project headers only
 ```
 
-By default, the overrides fall back to `\gapRoleHeader`, so they have no effect until explicitly set.
+By default both fall back to `\gapRoleHeader`, so they have no effect until explicitly set.
 
-## `\gapAfterSkills` Derivation
+## `\gapAfterSkills` derivation
 
-The `-14.2pt` value is **derived**, not arbitrary. It was measured to visually match the gap between Experience and Projects sections.
+`\gapAfterSkills` is **derived**, not arbitrary: it makes the Skills -> Experience gap
+match the Experience -> Projects gap. Its current value is in `spacing-config.tex`.
 
-**How it was measured** (via `\pagetotal`):
-- Skills section's natural inter-section gap: **38.1pt**
-- Experience section's target inter-section gap (to match Projects): **23.9pt**
-- `gapAfterSkills = 23.9 − 38.1 = −14.2pt`
+If `\gapListEnd`, `\gapSectionBottom`, or `\gapRoleHeader` change, the derived value
+drifts. Re-measure it with `\pagetotal`:
 
-**Important**: if `\gapListEnd`, `\gapSectionBottom`, or `\gapRoleHeader` change, this derived value drifts. Re-measure after any such change.
-
-**To re-measure**:
 1. Set `\gapAfterSkills` to `0pt`.
-2. Add `\the\pagetotal` temporarily before `\end{document}`.
-3. Compile; note the skills→experience gap (content height difference between sections).
-4. Compile without skills; note experience→projects gap.
-5. Set `\gapAfterSkills` to the difference.
-6. Remove the `\the\pagetotal` marker.
+2. Temporarily add `\the\pagetotal` before `\end{document}`.
+3. Compile and note the Skills -> Experience content-height difference.
+4. Compile without the Skills section and note the Experience -> Projects difference.
+5. Set `\gapAfterSkills` to the difference between the two.
+6. Remove the `\the\pagetotal` marker and recompile.
 
-## Auto-Tune Algorithm (for agents)
+## Auto-tune algorithm (for agents)
 
-When content has been finalized but doesn't fit 1 page, tune spacing in this priority order (least visually noticeable first). Change **one knob at a time** and recompile after each. No single change should exceed ~2pt.
+Use when content is final but does not fit one page. **Read `spacing-config.tex` first**
+for current values and ranges. Change one knob at a time, recompile after each, and keep
+each step to ~2pt or less. Never change the `11pt` font size.
 
-### Tightening Priority (to shrink)
+### Tightening priority (to shrink)
 
-1. `\gapListEnd` (`−7pt` → `−9pt`)
-2. `\gapRoleHeader` (`−7pt` → `−9pt`)
-3. `\gapSectionTop` (`−4pt` → `−6pt`)
-4. `\gapSectionBottom` (`−5pt` → `−7pt`)
-5. `\gapAfterHeading` (`0pt` → `−6pt`), `\gapAfterSkills` (re-measure first)
-6. `\gapBullet` (`−4pt` → `−2pt`) — most visually noticeable, use sparingly
+Move each knob toward its tighter bound, in this order:
+
+1. `\gapListEnd`
+2. `\gapRoleHeader`
+3. `\gapSectionTop`
+4. `\gapSectionBottom`
+5. `\gapAfterHeading`, then `\gapAfterSkills` (re-measure first)
+6. `\gapBullet` — most visually noticeable; use sparingly
 7. Page geometry (`\marginTop`, `\textHeightExtra`) — last resort
 
-### Loosening Priority (to improve readability)
+If a knob is already at its bound, skip it and continue down the list. If every knob is
+at its bound and the content still overflows, trim or condense content.
 
-When >~15pt whitespace remains at page bottom, reverse the order — loosen `\gapBullet` first, then move upward. Stop when ≤~5pt slack remains.
+### Loosening priority (to improve readability)
 
-### Measurement
+When more than ~15pt of whitespace remains at the bottom of the page, reverse the order:
+loosen `\gapBullet` first, then work upward. Stop when ~5pt of slack remains.
 
-To measure bottom whitespace:
+### Measuring bottom whitespace
+
 1. Temporarily append `\the\pagetotal` before `\end{document}`.
-2. Compile → the value printed is the content height on page 1.
-3. `whitespace = \textheight − \pagetotal`.
-4. Remove the marker before final compile.
+2. Compile — the printed value is the content height on page 1.
+3. `whitespace = \textheight - \pagetotal`.
+4. Remove the marker before the final compile.
 
-## Common Adjustments
+## Common adjustments
 
-| Goal | Change |
-|------|--------|
-| Bullets too tight | Increase `\gapBullet` (e.g., `-4pt` → `-3pt`) |
-| Heading → Skills gap too large | Decrease `\gapAfterHeading` (e.g., `0pt` → `-3pt`) |
-| Too much space after bullet lists | Decrease `\gapListEnd` (e.g., `-7pt` → `-9pt`) |
-| Need one more line on page | Tighten a combination of `\gapSectionTop`, `\gapSectionBottom`, `\gapListEnd` by 1-2pt each |
+| Goal | Direction |
+|------|-----------|
+| Bullets too tight | Loosen `\gapBullet` (toward its looser bound) |
+| Heading -> Skills gap too large | Tighten `\gapAfterHeading` (toward its tighter bound) |
+| Too much space after bullet lists | Tighten `\gapListEnd` (toward its tighter bound) |
+| Need one more line on the page | Tighten `\gapSectionTop`, `\gapSectionBottom`, `\gapListEnd` by 1-2pt each |
