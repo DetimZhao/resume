@@ -3,6 +3,11 @@
 % All tunable knobs live here — edit values in this file, then recompile.
 % See docs/SPACING.md for the reference table, ranges, and auto-tune algorithm.
 
+% --- PDF text extraction ---
+% pdfTeX encodes interword spaces as kerns by default; emit real space glyphs
+% so poppler, PDFKit, and ghostscript txtwrite all recover word boundaries.
+\pdfinterwordspaceon
+
 % --- Page geometry ---
 \newcommand{\marginTop}{-.7in}            % Vertical space above header; range: -.75in to -.5in
 \newcommand{\textHeightExtra}{1.25in}     % Total body text height; range: 1.25in to 1.0in
