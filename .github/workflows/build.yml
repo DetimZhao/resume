@@ -56,13 +56,16 @@ jobs:
 
       - name: Set output filename
         id: filename
+        env:
+          COMPANY: ${{ inputs.company }}
+          ROLE: ${{ inputs.role }}
         run: |
-          if [ -n "${{ inputs.company }}" ] || [ -n "${{ inputs.role }}" ]; then
-            SUFFIX="-${{ inputs.company }}-${{ inputs.role }}"
+          if [ -n "$COMPANY" ] || [ -n "$ROLE" ]; then
+            SUFFIX="-$COMPANY-$ROLE"
             SUFFIX="$(echo "$SUFFIX" | sed 's/[^a-zA-Z0-9_-]/-/g' | sed 's/--*/-/g' | sed 's/-$//')"
-            echo "jobname=${{ env.BASE_NAME }}${SUFFIX}" >> $GITHUB_OUTPUT
+            echo "jobname=${BASE_NAME}${SUFFIX}" >> "$GITHUB_OUTPUT"
           else
-            echo "jobname=${{ env.BASE_NAME }}" >> $GITHUB_OUTPUT
+            echo "jobname=${BASE_NAME}" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Compile LaTeX
