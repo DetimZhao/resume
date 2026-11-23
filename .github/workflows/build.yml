@@ -1,5 +1,7 @@
 name: Build Resume PDF
 
+# Path filters must list every file that can change the compiled PDF (plus this
+# workflow itself), or a push touching only one of them skips CI entirely.
 on:
   push:
     branches: [main]
@@ -8,6 +10,10 @@ on:
       - 'src-master/**'
       - 'resume.tex'
       - 'custom-commands.tex'
+      - 'spacing-config.tex'
+      - '.latexmkrc'
+      - 'scripts/**'
+      - '.github/workflows/build.yml'
   pull_request:
     branches: [main]
     paths:
@@ -15,6 +21,10 @@ on:
       - 'src-master/**'
       - 'resume.tex'
       - 'custom-commands.tex'
+      - 'spacing-config.tex'
+      - '.latexmkrc'
+      - 'scripts/**'
+      - '.github/workflows/build.yml'
   workflow_dispatch:
     inputs:
       company:
