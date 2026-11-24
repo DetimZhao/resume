@@ -9,7 +9,8 @@
     {Los Alamos National Laboratory}{Los Alamos, NM}
     \resumeItemListStart
         \resumeItem{Built a deterministic Python pipeline converting HPC documentation (HTML, PDF, DOCX) into hash-validated Markdown with provenance metadata for retrieval-augmented generation (RAG).}
-        \resumeItem{Developed pipeline tests that run on every GitLab CI commit, plus safeguards that cap retrieval volume and prevent partial writes, keeping published output complete and verified.}
+        \resumeItem{Hardened ingestion with bounded downloads, file-signature checks, and parser limits, so malformed DOCX/PDF inputs fail before extraction.}
+        \resumeItem{Implemented SHA-256 checks, stable document IDs, and source-binding validation, then published atomic exports so the internal Model Context Protocol (MCP) server consumes only verified documents.}
     \resumeItemListEnd
 
     \resumeSubheading
